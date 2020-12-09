@@ -49,13 +49,12 @@ def find_bags(dic_bags: Dict[str, str], target_bag: str) -> List[str]:
     return set(possible_bags)
 
 
-TXT = """shiny gold bags contain 2 dark red bags.
-dark red bags contain 2 dark orange bags.
-dark orange bags contain 2 dark yellow bags.
-dark yellow bags contain 2 dark green bags.
-dark green bags contain 2 dark blue bags.
-dark blue bags contain 2 dark violet bags.
-dark violet bags contain no other bags."""
+# dic_bags = parse(txt)
+# found = find_bags(dic_bags, "shiny gold")
+# print()
+# print("First solution")
+# print(len(found))
+# print()
 
 
 def parse2(txt: str) -> Dict[str, str]:
@@ -65,55 +64,33 @@ def parse2(txt: str) -> Dict[str, str]:
         bag = bag.split("bags")[0].strip()
         content = content.replace("bags", "bag")
         content = content.replace(".", "")
+        content = content.replace(",", "")
         content = content.split("bag")
         dic_bags[bag] = {}
         for inner_bag in content:
-            # print(inner_bag)
             if inner_bag == "":
                 continue
             elif inner_bag == " no other ":
                 continue
             else:
-                num = int(inner_bag[1])
-                inner_bag = inner_bag[3:].strip()
+                inner_bag = inner_bag.strip()
+                num = int(inner_bag[0])
+                inner_bag = inner_bag[2:].strip()
                 dic_bags[bag][inner_bag] = num
     return dic_bags
 
 
-def find_bags2(dic_bags: Dict[str, str], target_bag: str) -> List[str]:
-    # print(dic_bags)
-    all_bags = []
-    bag_content = dic_bags[target_bag]
+def bags_in_bag(dic_bags: Dict[str, int], bag: str) -> int:
+    # If no other bag inside, return 0
+    if dic_bags[bag] == {}:
+        return 0
 
-    for bag, num in bag_content.items():
-        all_bags.extend([bag] * num)
-
-    for bag in all_bags:
-        print(bag)
-        print(dic_bags[bag])
-        for inner_bag in bag.items():
-            all_bags.extend
-        # all_bags.extend[dic_bags[]]
-
-    # for bag in bag_content:
-    #     # print(bag)
-    #     # print(dic_bags[bag])
-    #     inner_bag = dic_bags[bag]
-    #     print(inner_bag)
-    #     if inner_bag not in bag_content:
-    #         bag_content.extend(inner_bag)
-    #     # print(dic_bags[bag])
-    #     # for inner_bag in dic_bags[bag]:
-    #     #     bag_content.extend(inner_bag)
-
-    # print(all_bags)
+    num_bags = 0
+    for inner_bag, number in dic_bags[bag].items():
+        num_bags += (bags_in_bag(dic_bags, inner_bag) + 1) * number
+    return num_bags
 
 
-dic_bags = parse2(TXT)
-find_bags2(dic_bags, "shiny gold")
-
-
-# dic_bags = parse(txt)
-# found = find_bags(dic_bags, "shiny gold")
-# print(found)
-# print(len(found))
+dic_bags = parse2(txt)
+print("Second solution")
+print(bags_in_bag(dic_bags, "shiny gold"))
